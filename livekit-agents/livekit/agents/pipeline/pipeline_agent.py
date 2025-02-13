@@ -475,10 +475,13 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         new_handle.initialize(source=source, synthesis_handle=synthesis_handle)
 
         if self._playing_speech and not self._playing_speech.nested_speech_done:
+            logger.debug("adding nested speech to playing speech")
             self._playing_speech.add_nested_speech(new_handle)
         elif self._speech_q:
+            logger.debug("adding nested speech to speech queue")
             self._speech_q[0].add_nested_speech(new_handle)
         else:
+            logger.debug("adding speech to playout")
             self._add_speech_for_playout(new_handle)
 
         # add the speech to the function call context if needed
