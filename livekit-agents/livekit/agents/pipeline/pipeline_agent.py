@@ -753,6 +753,7 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         copied_ctx.messages.append(ChatMessage.create(text=user_input, role="user"))
 
         tk = SpeechDataContextVar.set(SpeechData(sequence_id=handle.id))
+        logger.debug(f"SETTED SPEECH DATA 2 - Synthesize Answer Task; {SpeechDataContextVar.get(None)}")
         try:
             llm_stream = self._opts.before_llm_cb(self, copied_ctx)
             if asyncio.iscoroutine(llm_stream):
@@ -782,6 +783,7 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
             handle.initialize(source=llm_stream, synthesis_handle=synthesis_handle)
         finally:
             SpeechDataContextVar.reset(tk)
+            logger.debug(f"RESET SPEECH DATA 2 - Synthesize Answer Task; {SpeechDataContextVar.get(None)}")
 
     async def _play_speech(self, speech_handle: SpeechHandle) -> None:
         fnc_done_fut = asyncio.Future[None]()
@@ -1094,6 +1096,7 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         )
 
         tk = SpeechDataContextVar.set(SpeechData(speech_id))
+        logger.debug(f"SETTED SPEECH DATA 1 - Synthesize Agent Speech; {SpeechDataContextVar.get(None)}")
 
         async def _llm_stream_to_str_generator(
             stream: LLMStream,
@@ -1136,6 +1139,7 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
             )
         finally:
             SpeechDataContextVar.reset(tk)
+            logger.debug(f"RESET SPEECH DATA 1 - Synthesize Agent Speech; {SpeechDataContextVar.get(None)}")
 
     def _validate_reply_if_possible(self) -> None:
         """Check if the new agent speech should be played"""
